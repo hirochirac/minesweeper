@@ -116,11 +116,37 @@ mines_counter :: proc() {
 	}
 }
 
+get_grid_flooded :: proc(c: i32, r: i32) {
+
+	for cOff := -1; cOff <= 1; cOff += 1 {
+		for rOff := -1; rOff <= 1; rOff += 1 {
+			if (cOff == 0 && rOff == 0) {
+				continue
+			}
+
+			if (!is_index_valid(int(c) + cOff, int(r) + rOff)) {
+				continue
+			}
+
+			if (!grid[int(c) + cOff][int(r) + rOff].revealed) {
+				cell_revealed(c + i32(cOff), r + i32(rOff))
+			}
+		}
+	}
+
+}
+
 cell_revealed :: proc(c: i32, r: i32) {
 
 	if (grid[c][r].flagged == true) {
 		grid[c][r].revealed = false
 		return
+	}
+
+	grid[c][r].revealed = true
+
+	if (grid[c][r].nearby == 0) {
+		get_grid_flooded(c, r)
 	}
 
 	if (grid[c][r].mine) {
